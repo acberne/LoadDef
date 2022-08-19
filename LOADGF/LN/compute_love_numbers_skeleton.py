@@ -106,12 +106,11 @@ file_out : Extension for the output files.
     Default is ".txt"
 """
 
-
-
-
 # Main Function
 def main(myfile,rank,comm,size,startn=0,stopn=10000,delim=None,period_hours=12.42,r_min=1000.,inf_tol=1E-5,\
     rel_tol=1E-13,abs_tol=1E-13,backend='dop853',nstps=3000,G=6.672E-11,file_out='.txt',kx=1,num_soln=100,interp_emod=False,nmaxfull=None,eval_radius=None):
+
+
 
     # :: MPI ::
     startn = int(startn)
@@ -298,7 +297,7 @@ def main(myfile,rank,comm,size,startn=0,stopn=10000,delim=None,period_hours=12.4
     Yshr_sub  = np.empty((len(n_sub),num_soln*6))
     for ii in range(0,len(n_sub)):
         current_n = n_sub[ii]
-        print('Working on Harmonic Degree: %7s | Number: %6d of %6d | Rank: %6d' %(str(int(current_n)), (ii+1), len(n_sub), rank))
+        #print('Working on Harmonic Degree: %7s | Number: %6d of %6d | Rank: %6d' %(str(int(current_n)), (ii+1), len(n_sub), rank))
         # Compute Integration Results for the Current Spherical Harmonic Degree, n
         hprime_sub[ii],nlprime_sub[ii],nkprime_sub[ii],hpot_sub[ii],nlpot_sub[ii],nkpot_sub[ii],hstr_sub[ii],nlstr_sub[ii],nkstr_sub[ii],\
             hshr_sub[ii],nlshr_sub[ii],nkshr_sub[ii],sint_mt_sub[ii,:],Yload_sub[ii,:],Ypot_sub[ii,:],Ystr_sub[ii,:],Yshr_sub[ii,:] = \
@@ -343,119 +342,7 @@ def main(myfile,rank,comm,size,startn=0,stopn=10000,delim=None,period_hours=12.4
         hshr = hshr[nidx]; nlshr = nlshr[nidx]; nkshr = nkshr[nidx]
         sint_mt = sint_mt[nidx,:]; Yload = Yload[nidx,:]; Ypot = Ypot[nidx,:]; Ystr = Ystr[nidx,:]; Yshr = Yshr[nidx,:]
 
-        # Prepare Output Filenames (Random Integers Distinguish Files if Code is Being Run In Multiple Instances -- Body & Header Files Deleted After Writing)
-        lln_file = ("../output/Love_Numbers/LLN/" + lln_out)
-        pln_file = ("../output/Love_Numbers/PLN/" + pln_out)
-        str_file = ("../output/Love_Numbers/STR/" + str_out)
-        shr_file = ("../output/Love_Numbers/SHR/" + shr_out)
-        lln_head = ("../output/Love_Numbers/LLN/" + str(np.random.randint(500)) + "header.txt")
-        pln_head = ("../output/Love_Numbers/PLN/" + str(np.random.randint(500)) + "header.txt")
-        str_head = ("../output/Love_Numbers/STR/" + str(np.random.randint(500)) + "header.txt")
-        shr_head = ("../output/Love_Numbers/SHR/" + str(np.random.randint(500)) + "header.txt")
-        lln_body = ("../output/Love_Numbers/LLN/" + str(np.random.randint(500)) + "body.txt")
-        pln_body = ("../output/Love_Numbers/PLN/" + str(np.random.randint(500)) + "body.txt")
-        str_body = ("../output/Love_Numbers/STR/" + str(np.random.randint(500)) + "body.txt")
-        shr_body = ("../output/Love_Numbers/SHR/" + str(np.random.randint(500)) + "body.txt")
-
-        # Prepare Data For Output
-        all_lln_data = np.column_stack((myn,hprime,nlprime,nkprime,hprime_asym,nlprime_asym,nkprime_asym))
-        all_pln_data = np.column_stack((myn,hpot,nlpot,nkpot))
-        all_str_data = np.column_stack((myn,hstr,nlstr,nkstr))
-        all_shr_data = np.column_stack((myn,hshr,nlshr,nkshr))
-
-        # Universal Header
-        uh1 = ('------------------------------------------------------ \n')
-        uh2a = (':: Load Love Numbers (Load-Deformation Coefficients) \n')
-        uh2b = (':: Potential Love Numbers \n')
-        uh2c = (':: Stress Love Numbers \n')
-        uh2d = (':: Shear Love Numbers \n')
-        uh3 = (':: Computed at ' + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y") + '\n')
-        uh4 = ('------------------------------------------------------ \n')
-        uh5 = (':: Material Parameters \n')
-        uh6 = ('Planet-Radius (m) | Planet-Mass (kg) | Lambda-Surface (Pa) | Mu-Surface (Pa) | Gravity-Surface (m/s^2) \n')
-        uh7 = (str(planet_radius) + ' ' + str(planet_mass) + ' ' + str(lmda_surface) + ' ' + str(mu_surface) + ' ' + str(g_surface) + '\n')
-        uh8 = ('------------------------------------------------------ \n')
-        uh9 = (':: Asymptotic Love Numbers \n')
-        uh10 = ('hp     |     hpp     |     nlp     |     nlpp     |     nkp     |     nkpp \n')
-        uh11 = (str(h_inf) + ' ' + str(h_inf_prime) + ' ' + str(l_inf) + ' ' + str(l_inf_prime) + ' ' + str(k_inf) + ' ' + str(k_inf_prime) + '\n')
-        uh12 = ('------------------------------------------------------ \n')
-        uh13 = ('******************   Love Numbers   ****************** \n')
-
-        # Write Header Info to File
-        hf = open(lln_head,'w')
-        lln_str = 'n   |   h   |   nl   |   nk | h_asymptotic | nl_asymptotic | nk_asymptotic \n'
-        hf.write(uh1); hf.write(uh2a); hf.write(uh3); hf.write(uh4); hf.write(uh5); hf.write(uh6)
-        hf.write(uh7); hf.write(uh8); hf.write(uh9); hf.write(uh10); hf.write(uh11); hf.write(uh12); hf.write(uh13)
-        hf.write(lln_str)
-        hf.close()
-        hf = open(pln_head,'w')
-        pln_str = 'n   |   h   |   nl   |   nk \n'
-        hf.write(uh1); hf.write(uh2b); hf.write(uh3); hf.write(uh4); hf.write(uh5); hf.write(uh6)
-        hf.write(uh7); hf.write(uh8); hf.write(uh13)
-        hf.write(pln_str)
-        hf.close()
-        hf = open(str_head,'w')
-        str_str = 'n   |   h   |   nl   |   nk \n'
-        hf.write(uh1); hf.write(uh2c); hf.write(uh3); hf.write(uh4); hf.write(uh5); hf.write(uh6)
-        hf.write(uh7); hf.write(uh8); hf.write(uh13)
-        hf.write(str_str)
-        hf.close()
-        hf = open(shr_head,'w')
-        shr_str = 'n   |   h   |   nl   |   nk \n'
-        hf.write(uh1); hf.write(uh2d); hf.write(uh3); hf.write(uh4); hf.write(uh5); hf.write(uh6)
-        hf.write(uh7); hf.write(uh8); hf.write(uh13)
-        hf.write(shr_str)
-        hf.close()
-
-        # Write Load Love Numbers to File
-        np.savetxt(lln_body, all_lln_data, fmt='%7d %15.10f %15.10f %15.10f %15.10f %15.10f %15.10f')
-
-        # Write Potential Love Numbers to File
-        np.savetxt(pln_body, all_pln_data, fmt='%7d %15.10f %15.10f %15.10f')
-
-        # Write Stress Love Numbers to File
-        np.savetxt(str_body, all_str_data, fmt='%7d %15.10f %15.10f %15.10f')
-
-        # Write Shear Love Numbers to File
-        np.savetxt(shr_body, all_shr_data, fmt='%7d %15.10f %15.10f %15.10f')
- 
-        # Combine Header and Body Files
-        filenames_lln = [lln_head, lln_body]
-        with open(lln_file,'w') as outfile:
-            for fname in filenames_lln:
-                with open(fname) as infile:
-                    outfile.write(infile.read())
-        filenames_pln = [pln_head, pln_body]
-        with open(pln_file,'w') as outfile:
-            for fname in filenames_pln:
-                with open(fname) as infile:
-                    outfile.write(infile.read())
-        filenames_str = [str_head, str_body]
-        with open(str_file,'w') as outfile:
-            for fname in filenames_str:
-                with open(fname) as infile:
-                    outfile.write(infile.read())
-        filenames_shr = [shr_head, shr_body]
-        with open(shr_file,'w') as outfile:
-            for fname in filenames_shr:
-                with open(fname) as infile:
-                    outfile.write(infile.read())
-
-        # Remove Header and Body Files
-        os.remove(lln_head)
-        os.remove(lln_body)
-        os.remove(pln_head)
-        os.remove(pln_body)
-        os.remove(str_head)
-        os.remove(str_body)
-        os.remove(shr_head)
-        os.remove(shr_body)
-
-        # Re-Shape the Y Solution Arrays
-        Yload = Yload.reshape(len(myn),int(len(Yload[0,:])/6),6)
-        Ypot  = Ypot.reshape(len(myn), int(len( Ypot[0,:])/6),6)
-        Ystr  = Ystr.reshape(len(myn), int(len( Ystr[0,:])/6),6)
-        Yshr  = Yshr.reshape(len(myn), int(len( Yshr[0,:])/6),6)
+       
 
         # Return Variables
         return myn,hprime,nlprime,nkprime,h_inf,l_inf,k_inf,h_inf_prime,l_inf_prime,k_inf_prime,hpot,nlpot,nkpot,\
