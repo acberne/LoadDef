@@ -39,8 +39,8 @@ from LOADGF.LN import compute_ln_interior
 # Radius at which to evaluate the Love numbers (meters)
 radius_for_evaluation = 6356000
 num_soln = 100 # helps to hone in on the correct radius
-theta_for_evaluation= np.pi/4 # in radians
-phi_for_evaluation= np.pi # in radians
+theta_for_evaluation= 1.0 # in radians
+phi_for_evaluation= 0 # in radians
 
 
 # ------------------ END USER INPUTS ----------------------- #
@@ -74,7 +74,7 @@ def GetV(r,thet,phi,tC=0,T=24*3600,a=384.748e6,G=6.674e-11,Me=5.972e24,e=0.0549)
 def GetderV(r,thet,phi):
 
 	##This is best done numercally
-	delthet=10e-9
+	delthet=5e-4
 	delphi=1e-8
 	delr=1e-6
 	derVr =(GetV(r+delr,thet,phi)-GetV(r,thet,phi))/(delr)
@@ -98,7 +98,7 @@ def GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot,g=9.81):
 
 def GetStrainTensor(r,thet,phi,ln_hpot,ln_nlpot,g=9.81):
 
-	delthet=10e-9
+	delthet=5e-4
 	delphi=1e-8
 	delr=1e-6
 
