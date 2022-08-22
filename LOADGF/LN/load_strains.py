@@ -36,11 +36,6 @@ from LOADGF.LN import compute_ln_interior
 
 # --------------- SPECIFY USER INPUTS --------------------- #
 
-# Radius at which to evaluate the Love numbers (meters)
-radius_for_evaluation = 6356000
-num_soln = 100 # helps to hone in on the correct radius
-theta_for_evaluation= np.pi/2 # in radians
-phi_for_evaluation= 3*np.pi/4 # in radians
 
 
 def main(r,theta,phi,num_soln):
@@ -58,8 +53,13 @@ def main(r,theta,phi,num_soln):
 
 
 		prefac=(((Mm/Me)*(r/a)**3)*r)*(G*Me/(r**2))
-		Y20=(1/4*(5/np.pi)**(1/2))*(3*np.cos(thet)*np.cos(thet)-1)
-		Y22=(1/4*(15/(2*np.pi))**(1/2))*(np.sin(thet)*np.sin(thet))*np.cos(2*phi)
+		#Y20=(1/4*(5/np.pi)**(1/2))*(3*np.cos(thet)*np.cos(thet)-1)
+		#Y22=(1/4*(15/(2*np.pi))**(1/2))*(np.sin(thet)*np.sin(thet))*np.cos(2*phi)
+		#V=prefac*((1/2)*Y20-(1/4)*Y22)
+
+
+		Y20=(1/2)*(3*np.cos(thet)*np.cos(thet)-1)
+		Y22=(3)*(np.sin(thet)*np.sin(thet))*np.cos(2*phi)
 		V=prefac*((1/2)*Y20-(1/4)*Y22)
 
 		
@@ -70,8 +70,8 @@ def main(r,theta,phi,num_soln):
 	def GetderV(r,thet,phi):
 
 		##This i1 best done numercally
-		delthet=1e-8
-		delphi=1e-8
+		delthet=1e-7
+		delphi=1e-7
 		delr=1e-6
 		derVr =(GetV(r+delr,thet,phi)-GetV(r,thet,phi))/(delr)
 		derVth=(GetV(r,thet+delthet,phi)-GetV(r,thet,phi))/(delthet)
@@ -85,7 +85,6 @@ def main(r,theta,phi,num_soln):
 		##Assuming we have a degree-2 Load
 
 		u_r=(ln_hpot[2]/(g))*GetV(r,thet,phi)
-		print(u_r)
 		u_thet=(ln_nlpot[2]/(g*ln_n[2]))*(1/r)*GetderV(r,thet,phi)[1]
 		u_phi=(ln_nlpot[2]/(g*ln_n[2]))*(1/(r*np.sin(thet)))*GetderV(r,thet,phi)[2]
 
@@ -95,8 +94,8 @@ def main(r,theta,phi,num_soln):
 
 	def GetStrainTensor(r,thet,phi,ln_hpot,ln_nlpot,g=9.81):
 
-		delthet=1e-8
-		delphi=1e-8
+		delthet=1e-7
+		delphi=1e-7
 		delr=1e-6
 
 		dur_r= (GetDisplacements(r+delr,thet,phi,ln_n,ln_hpot,ln_nlpot)[0]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[0])/(delr)
@@ -129,7 +128,7 @@ def main(r,theta,phi,num_soln):
 	##Okay, test the function
 
 
-	e_mat=(GetStrainTensor(radius_for_evaluation,theta_for_evaluation,phi_for_evaluation,ln_hpot,ln_nlpot,g=9.81))
+	e_mat=(GetStrainTensor(r,theta,phi,ln_hpot,ln_nlpot,g=9.81))
 
 	return e_mat
 
