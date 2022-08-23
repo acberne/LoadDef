@@ -37,7 +37,7 @@ from LOADGF.LN import load_strains
 # --------------- SPECIFY USER INPUTS --------------------- #
 
 # Radius at which to evaluate the Love numbers (meters)
-radius_for_evaluation = 6371000
+radius_for_evaluation = 5371000
 num_soln = 100 # helps to hone in on the correct radius
 theta_for_evaluation= np.pi/2
 phi_for_evaluation= 0

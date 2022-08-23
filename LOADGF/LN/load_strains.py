@@ -85,9 +85,8 @@ def main(r,theta,phi,num_soln):
 		##Assuming we have a degree-2 Load
 
 		u_r=(ln_hpot[2]/(g))*GetV(r,thet,phi)
-		u_thet=(ln_nlpot[2]/(g*ln_n[2]))*(1/r)*GetderV(r,thet,phi)[1]
-		u_phi=(ln_nlpot[2]/(g*ln_n[2]))*(1/(r*np.sin(thet)))*GetderV(r,thet,phi)[2]
-
+		u_thet=(ln_nlpot[2]/(g*ln_n[2]))*GetderV(r,thet,phi)[1]
+		u_phi=(ln_nlpot[2]/(g*ln_n[2]))*GetderV(r,thet,phi)[2]
 		return u_r,u_thet,u_phi
 
 
@@ -99,14 +98,14 @@ def main(r,theta,phi,num_soln):
 		delr=1e-6
 
 		dur_r= (GetDisplacements(r+delr,thet,phi,ln_n,ln_hpot,ln_nlpot)[0]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[0])/(delr)
-		dur_thet= (GetDisplacements(r,thet+delthet,phi,ln_n,ln_hpot,ln_nlpot)[0]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[0])/(delthet)
-		dur_phi= (GetDisplacements(r,thet,phi+delphi,ln_n,ln_hpot,ln_nlpot)[0]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[0])/(delphi)
+		dur_thet= (GetDisplacements(r,thet+delthet,phi,ln_n,ln_hpot,ln_nlpot)[0]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[0])/(delthet*r)
+		dur_phi= (GetDisplacements(r,thet,phi+delphi,ln_n,ln_hpot,ln_nlpot)[0]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[0])/(delphi*r*np.sin(thet))
 		duthet_r= (GetDisplacements(r+delr,thet,phi,ln_n,ln_hpot,ln_nlpot)[1]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[1])/(delr)
 		duphi_r= (GetDisplacements(r+delr,thet,phi,ln_n,ln_hpot,ln_nlpot)[2]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[2])/(delr)
-		duthet_phi= (GetDisplacements(r,thet,phi+delphi,ln_n,ln_hpot,ln_nlpot)[1]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[1])/(delphi)
-		duphi_thet= (GetDisplacements(r,thet+delthet,phi,ln_n,ln_hpot,ln_nlpot)[2]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[2])/(delthet)
-		duthet_thet= (GetDisplacements(r,thet+delthet,phi,ln_n,ln_hpot,ln_nlpot)[1]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[1])/(delthet)
-		duphi_phi= (GetDisplacements(r,thet,phi+delphi,ln_n,ln_hpot,ln_nlpot)[2]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[2])/(delphi)
+		duthet_phi= (GetDisplacements(r,thet,phi+delphi,ln_n,ln_hpot,ln_nlpot)[1]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[1])/(delphi*r*np.sin(thet))
+		duphi_thet= (GetDisplacements(r,thet+delthet,phi,ln_n,ln_hpot,ln_nlpot)[2]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[2])/(delthet*r)
+		duthet_thet= (GetDisplacements(r,thet+delthet,phi,ln_n,ln_hpot,ln_nlpot)[1]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[1])/(delthet*r)
+		duphi_phi= (GetDisplacements(r,thet,phi+delphi,ln_n,ln_hpot,ln_nlpot)[2]-GetDisplacements(r,thet,phi,ln_n,ln_hpot,ln_nlpot)[2])/(delphi*r*np.sin(thet))
 
 		
 		e_rr=dur_r
